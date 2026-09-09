@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Smart_Car_Rental_System.Model;
 using System.Runtime.ConstrainedExecution;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -245,8 +246,17 @@ namespace Smart_Car_Rental_System
                                 _context.RentCar.Add(rentcar);
                                _context.SaveChanges();
                                Console.WriteLine($"Due date: {rentcar.Duedate.ToString("dd/MM/yyyy")}\n");
-                       
-                       
+                                CustomerRentalHistory ch = new CustomerRentalHistory
+                                {
+                                    CarName = ca.Model + ca.Year,
+                                    CarId=ca.Id,
+                                    Rented= rentcar.Rentdate,
+                                    Due= rentcar.Duedate,
+                                    Status="Active",
+
+                                };
+
+
 
                      }
                       public static DateTime DuedateReturn(int id)

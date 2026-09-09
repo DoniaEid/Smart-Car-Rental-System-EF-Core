@@ -21,7 +21,7 @@ namespace Smart_Car_Rental_System.Model
 
         public string Status { get; set; }
 
-        public double Fee { get; set; }
+        public double ?Fee { get; set; }
         public int CustomerId{ get; set; }
 
         public Customer customer { get; set; }
