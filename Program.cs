@@ -3,6 +3,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Runtime.ConstrainedExecution;
 
 namespace Smart_Car_Rental_System
 {
@@ -41,6 +42,10 @@ namespace Smart_Car_Rental_System
 
                     case 4:
                         ShowAllFleet();
+                        break;
+
+                    case 5:
+                        RentCar();
                         break;
 
                 }
@@ -175,8 +180,73 @@ namespace Smart_Car_Rental_System
                             }
                         }
                     }
+                        public static Car FindCarById(int id)
+                        {
+                            var car = _context.Car.FirstOrDefault(x => x.Id == id);
+                            return car;
+                        }
+                        public static Customer FindCustomerById(int id)
+                        {
+                            var customer= _context.Customer.FirstOrDefault(x => x.ID == id);
+                            return customer;
+                        }
+                        public static void RentCar()
+                        {
+                            Customer c;
+
+                                    while (true) { 
+                                    Console.Write("Enter Customer ID: ");
+                                    int Cusid = Convert.ToInt32(Console.ReadLine());
+                                        c = FindCustomerById(Cusid);
+                                        if (c is null)
+                                            {
+                                                Console.WriteLine("Customer not found.");
+                          
+                                            }
+                                        else
+                                        {
+                  
+                                            break;
+                                        }
+                                    }
+        
+                        Console.WriteLine("---------------------------------- ");
+                        Console.WriteLine("Available Fleet:");
+                        Console.WriteLine("---------------------------------- ");
+                        ShowAvailableCars();
+                       Car ca;
+                        while (true)
+                        {
+                            Console.Write("Enter Car ID to rent:");
+                            int Carid = Convert.ToInt32(Console.ReadLine());
+                            ca = FindCarById(Carid);
+                            if (c is null)
+                            {
+                                Console.WriteLine("Car not found.");
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        Console.WriteLine($"Car [CAR-00{ca.Id}] \"{ca.Model} {ca.Year}\" rented by{c.Name}");
+                        ca.Status = "rented";
+                        RentCar rentcar = new RentCar
+                        {
+                            CustomerId = c.ID,
+                            CarId = ca.Id
+                        };
+
+                        _context.RentCar.Add(rentcar);
+                       _context.SaveChanges();
+                       Console.WriteLine($"Due date: {rentcar.Duedate.ToString("dd/MM/yyyy")}\n");
+                       
+                       
+
+            }
+        }
 
 
 
     }
-}
+
