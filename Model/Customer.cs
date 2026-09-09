@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Smart_Car_Rental_System.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -17,5 +18,6 @@ namespace Smart_Car_Rental_System
 
         public Branch branch { get; set; }
         public List<RentCar> RentCar { get; set; }
+        public List<CustomerRentalHistory> CustomerRentalHistory { get; set; }
     }
 }

@@ -4,6 +4,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Runtime.ConstrainedExecution;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Smart_Car_Rental_System
 {
@@ -46,6 +47,10 @@ namespace Smart_Car_Rental_System
 
                     case 5:
                         RentCar();
+                        break;
+
+                    case 6:
+
                         break;
 
                 }
@@ -210,40 +215,71 @@ namespace Smart_Car_Rental_System
                                         }
                                     }
         
-                        Console.WriteLine("---------------------------------- ");
-                        Console.WriteLine("Available Fleet:");
-                        Console.WriteLine("---------------------------------- ");
-                        ShowAvailableCars();
-                       Car ca;
-                        while (true)
+                                Console.WriteLine("---------------------------------- ");
+                                Console.WriteLine("Available Fleet:");
+                                Console.WriteLine("---------------------------------- ");
+                                ShowAvailableCars();
+                               Car ca;
+                                while (true)
+                                {
+                                    Console.Write("Enter Car ID to rent:");
+                                    int Carid = Convert.ToInt32(Console.ReadLine());
+                                    ca = FindCarById(Carid);
+                                    if (ca is null)
+                                    {
+                                        Console.WriteLine("Car not found.");
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                Console.WriteLine($"Car [CAR-00{ca.Id}] \"{ca.Model} {ca.Year}\" rented by{c.Name}");
+                                ca.Status = "rented";
+                                RentCar rentcar = new RentCar
+                                {
+                                    CustomerId = c.ID,
+                                    CarId = ca.Id
+                                };
+
+                                _context.RentCar.Add(rentcar);
+                               _context.SaveChanges();
+                               Console.WriteLine($"Due date: {rentcar.Duedate.ToString("dd/MM/yyyy")}\n");
+                       
+                       
+
+                     }
+                      public static DateTime DuedateReturn(int id)
                         {
-                            Console.Write("Enter Car ID to rent:");
-                            int Carid = Convert.ToInt32(Console.ReadLine());
-                            ca = FindCarById(Carid);
-                            if (ca is null)
-                            {
-                                Console.WriteLine("Car not found.");
-                            }
-                            else
-                            {
-                                break;
-                            }
+                          var x = _context.RentCar.SingleOrDefault(x => x.CarId == id);
+                          return x.Duedate;
                         }
-                        Console.WriteLine($"Car [CAR-00{ca.Id}] \"{ca.Model} {ca.Year}\" rented by{c.Name}");
-                        ca.Status = "rented";
-                        RentCar rentcar = new RentCar
-                        {
-                            CustomerId = c.ID,
-                            CarId = ca.Id
-                        };
 
-                        _context.RentCar.Add(rentcar);
+                    public static void ReturnCar()
+                    {
+                       Console.WriteLine("Enter Car ID:");
+                       int CarId = Convert.ToInt32(Console.ReadLine());
+                       Car ca = FindCarById(CarId);
+                       Console.WriteLine($"{ca.Model} {ca.Year} Returned.");
+                       ca.Status = "returned";
                        _context.SaveChanges();
-                       Console.WriteLine($"Due date: {rentcar.Duedate.ToString("dd/MM/yyyy")}\n");
-                       
-                       
+                       var date=DuedateReturn(CarId);
+                        if (date == DateTime.Now)
+                        {
+                            Console.WriteLine("Returned on time. No late fee. ");
+                        }
+                        else
+                        {
+                             var AmountFee = (DateTime.Now - date).Days*150;
+                             Fee f = new Fee { CarId = ca.Id, Amount = AmountFee };
+                             _context.Fee.Add(f);
+                             _context.SaveChanges();
+                             Console.WriteLine($"Late return fee: {AmountFee} EGP");
+                        }
+                    }
 
-            }
+
+
         }
 
 

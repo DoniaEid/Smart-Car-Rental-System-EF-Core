@@ -27,7 +27,11 @@ namespace Smart_Car_Rental_System
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(x => x.Joined).HasDefaultValueSql("getdate()");
-
+            builder
+                .HasMany(x => x.CustomerRentalHistory)
+                .WithOne(x => x.customer)
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
