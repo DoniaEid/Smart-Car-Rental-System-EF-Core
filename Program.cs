@@ -51,7 +51,10 @@ namespace Smart_Car_Rental_System
                         break;
 
                     case 6:
-
+                        ReturnCar();
+                        break;
+                    case 7:
+                        CustomerRentalHistory();
                         break;
 
                 }
@@ -106,13 +109,13 @@ namespace Smart_Car_Rental_System
                         }
                    }
 
-                    public static void ShowAllUser()
+                        public static void ShowAllUser()
                     {
                         AllManagers();
                         AllCustomers();
                     }
 
-                    public static void AllCustomers()
+                        public static void AllCustomers()
                     {
                     var Customers = _context.Customer
                         .AsNoTracking()
@@ -140,7 +143,7 @@ namespace Smart_Car_Rental_System
                             }
                         }
 
-                    public static void AllManagers()
+                        public static void AllManagers()
                     {
                        var Managers = _context.Manager.AsNoTracking().ToList();
                         foreach(var m in Managers)
@@ -154,7 +157,8 @@ namespace Smart_Car_Rental_System
                             Console.WriteLine();
                       }
                     }
-                    public static void ShowAvailableCars()
+
+                        public static void ShowAvailableCars()
                     {
                         var AvailableCars = _context.Car.Where(x => x.Status == "Available").ToList();
                         if (AvailableCars.IsNullOrEmpty())
@@ -170,7 +174,8 @@ namespace Smart_Car_Rental_System
                             }
                         }
                     }
-                    public static void ShowAllFleet()
+
+                        public static void ShowAllFleet()
                     {
                         var AvailableCars = _context.Car.ToList();
                         if (AvailableCars.IsNullOrEmpty())
@@ -186,16 +191,24 @@ namespace Smart_Car_Rental_System
                             }
                         }
                     }
+
                         public static Car FindCarById(int id)
                         {
                             var car = _context.Car.FirstOrDefault(x => x.Id == id);
                             return car;
                         }
-                        public static Customer FindCustomerById(int id)
+                        public static RentCar FindRentCarById(int id)
+                        {
+                            var car = _context.RentCar.FirstOrDefault(x => x.CarId == id);
+                            return car;
+                        }
+
+                     public static Customer FindCustomerById(int id)
                         {
                             var customer= _context.Customer.FirstOrDefault(x => x.ID == id);
                             return customer;
                         }
+
                         public static void RentCar()
                         {
                             Customer c;
@@ -248,49 +261,121 @@ namespace Smart_Car_Rental_System
                                Console.WriteLine($"Due date: {rentcar.Duedate.ToString("dd/MM/yyyy")}\n");
                                 CustomerRentalHistory ch = new CustomerRentalHistory
                                 {
-                                    CarName = ca.Model + ca.Year,
+                                    CarName = ca.Model +" "+ ca.Year,
                                     CarId=ca.Id,
                                     Rented= rentcar.Rentdate,
                                     Due= rentcar.Duedate,
                                     Status="Active",
-
+                                    CustomerId=c.ID
                                 };
+                                _context.CustomerRentalHistory.Add(ch);
 
+                                _context.SaveChanges();
+ 
 
+                          }
 
-                     }
-                      public static DateTime DuedateReturn(int id)
+                        public static DateTime DuedateReturn(int id)
                         {
                           var x = _context.RentCar.SingleOrDefault(x => x.CarId == id);
                           return x.Duedate;
                         }
 
-                    public static void ReturnCar()
-                    {
-                       Console.WriteLine("Enter Car ID:");
-                       int CarId = Convert.ToInt32(Console.ReadLine());
-                       Car ca = FindCarById(CarId);
-                       Console.WriteLine($"{ca.Model} {ca.Year} Returned.");
-                       ca.Status = "returned";
-                       _context.SaveChanges();
-                       var date=DuedateReturn(CarId);
-                        if (date == DateTime.Now)
+                        public static void ReturnCar()
+                        {
+                         RentCar ca;
+                         CustomerRentalHistory tr;
+                        int CarId;
+
+                        while (true)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine("Enter Car ID:");
+
+                            CarId = Convert.ToInt32(Console.ReadLine());
+
+                            ca = FindRentCarById(CarId);
+
+                            if (ca is null)
+                            {
+                                Console.WriteLine("Car not found.");
+                                continue;
+                            }
+
+                            tr = TranscationByIdCar(ca.CarId);
+
+                            if (tr is null || tr.Status != "Active")
+                            {
+                                Console.WriteLine("This car is not currently rented.");
+                                continue;
+                            }
+                             break;
+                        }
+                            Car c = FindCarById(ca.CarId);
+                            Console.WriteLine($"{c.Model} {c.Year} Returned.");
+                            c.Status = "Available";
+                           _context.SaveChanges();
+                           var date=DuedateReturn(CarId);
+                       
+                        if (date > DateTime.Now)
                         {
                             Console.WriteLine("Returned on time. No late fee. ");
+                            tr.Status = "Returned";
+                            tr.Returned = DateTime.Now;
                         }
                         else
                         {
-                             var AmountFee = (DateTime.Now - date).Days*150;
+                             var AmountFee = Math.Abs((DateTime.Now - date).Days*150);
                              Fee f = new Fee { CarId = ca.Id, Amount = AmountFee };
                              _context.Fee.Add(f);
                              _context.SaveChanges();
                              Console.WriteLine($"Late return fee: {AmountFee} EGP");
+                             tr.Fee = AmountFee;
+                             
                         }
+
                     }
 
+                        public static CustomerRentalHistory TranscationByIdCar(int id)
+                    {
+                        return _context.CustomerRentalHistory.FirstOrDefault(x => x.CarId == id);
+
+                    }
+
+                        public static void CustomerRentalHistory()
+                        {
+                         Console.Write("Enter Customer Id: ");
+                         int CusId = Convert.ToInt32(Console.ReadLine());
+                         if(FindCustomerById(CusId) is null)
+                         {
+                           Console.WriteLine("Customer not found. ");
+
+                         }
+                        else
+                        {
+                             var x = _context.CustomerRentalHistory.ToList();
+                                foreach(var all in x)
+                                {
+                                 Console.WriteLine("\n");
+                                  Console.WriteLine($"--- Transaction #{all.Id} ------------------ ");
+
+                                Console.WriteLine($"Car               :  {all.CarName}");
+                                Console.WriteLine($"Car Id            :  CAR-00{all.CarId}");
+                                Console.WriteLine($"Rented            :  {all.Rented.ToString("dd//mm/yy")}");
+                                Console.WriteLine($"Due               :  {all.Due.ToString("dd//mm/yy")}");
+                                Console.WriteLine($"Returned          :  {(all.Returned.HasValue ? all.Returned.Value.ToString("dd/MM/yyyy") : "Not returned yet")}");
+                                Console.WriteLine($"Status            :  {all.Status}");
+                                Console.WriteLine($"Fee               :  {(all.Fee.HasValue? all.Fee.Value:"None")}");
+                                Console.WriteLine("\n");
+                              }
+
+                        
+                        }
+
+                     }
 
 
-        }
+    }
 
 
 

@@ -6,7 +6,7 @@ namespace Smart_Car_Rental_System.Model
 {
     public class CustomerRentalHistory
     {
-
+        
         public int Id { get; set; }
 
         public string CarName { get; set; }
