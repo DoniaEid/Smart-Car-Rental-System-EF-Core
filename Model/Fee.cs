@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Smart_Car_Rental_System
 {
-    internal class Fee
+    public class Fee
     {
         public int Id { get; set; }
         public int CarId { get; set; }

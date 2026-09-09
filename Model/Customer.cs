@@ -5,7 +5,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Smart_Car_Rental_System
 {
-    internal class Customer
+    public class Customer
     {
         public int ID { get; set; }
         public string Name { get; set; }

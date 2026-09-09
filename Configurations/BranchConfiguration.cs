@@ -22,8 +22,10 @@ namespace Smart_Car_Rental_System
                 .HasMany(x=>x.Customers)
                 .WithOne(x=>x.branch)
                 .HasForeignKey(x=>x.BranchId)
-                 .OnDelete(DeleteBehavior.Restrict); 
-           
+                 .OnDelete(DeleteBehavior.Restrict);
+
+        
+         
         }
     }
 }

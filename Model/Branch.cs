@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Smart_Car_Rental_System
 {
-    internal class Branch
+    public class Branch
     {
         public int Id { get; set; }
         public string Name { get; set; }

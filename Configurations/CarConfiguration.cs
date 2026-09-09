@@ -17,14 +17,14 @@ namespace Smart_Car_Rental_System
                 .HasForeignKey(x => x.BranchId)
                 .OnDelete(DeleteBehavior.Restrict);
             builder
-                .HasMany(x=>x.RentCar)
-                .WithOne(x=>x.car)
-                .HasForeignKey(x=>x.CarId)
+                .HasMany(x => x.RentCar)
+                .WithOne(x => x.car)
+                .HasForeignKey(x => x.CarId)
                 .OnDelete(DeleteBehavior.Restrict);
             builder
-                .HasMany(x=>x.Fee)
-                .WithOne(x=>x.Car)
-                .HasForeignKey(x=>x.CarId)
+                .HasMany(x => x.Fee)
+                .WithOne(x => x.Car)
+                .HasForeignKey(x => x.CarId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
 

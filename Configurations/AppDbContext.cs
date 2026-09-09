@@ -5,8 +5,12 @@ using System.Text;
 
 namespace Smart_Car_Rental_System
 {
-    internal class AppDbContext:DbContext
+   public class AppDbContext:DbContext
     {
+       public DbSet<Branch> Branch{ get; set; }
+        public DbSet<Manager> Manager { get; set; }
+        public DbSet<Customer> Customer { get; set; }
+        public DbSet<Car> Car { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

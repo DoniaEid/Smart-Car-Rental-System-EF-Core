@@ -16,6 +16,7 @@ namespace Smart_Car_Rental_System
             builder.HasCheckConstraint("CK_Phone", "Phone LIKE '%[0-9]%'");
             builder.Property(x => x.Hired).HasDefaultValueSql("getdate()");
 
+         
         }
     }
 }
