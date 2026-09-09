@@ -2,6 +2,7 @@
 
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Smart_Car_Rental_System
 {
@@ -22,6 +23,7 @@ namespace Smart_Car_Rental_System
                 {
                     case 1:
                         Console.WriteLine();
+
                         BranchInformation();
                         break;
                     case 2:
@@ -35,6 +37,10 @@ namespace Smart_Car_Rental_System
                         Console.WriteLine("Available Fleet:");
                         Console.WriteLine("----------------------------------");
                         ShowAvailableCars();
+                        break;
+
+                    case 4:
+                        ShowAllFleet();
                         break;
 
                 }
@@ -139,15 +145,35 @@ namespace Smart_Car_Rental_System
                     }
                     public static void ShowAvailableCars()
                     {
-                       var AvailableCars = _context.Car.Where(x => x.Status == "Available").ToList();
-                       foreach(var car in AvailableCars)
+                        var AvailableCars = _context.Car.Where(x => x.Status == "Available").ToList();
+                        if (AvailableCars.IsNullOrEmpty())
                         {
-                              Console.WriteLine($"Car [CAR-00{car.Id}]-{car.Model} {car.Year} | Condition:{car.Condition} | {car.Status}");
-                              Console.WriteLine();
+                            Console.WriteLine("No available cars found.\n");
                         }
-
-
-
+                        else
+                        {
+                            foreach (var car in AvailableCars)
+                            {
+                                Console.WriteLine($"Car [CAR-00{car.Id}]-{car.Model} {car.Year} | Condition:{car.Condition} | {car.Status}");
+                                Console.WriteLine();
+                            }
+                        }
+                    }
+                    public static void ShowAllFleet()
+                    {
+                        var AvailableCars = _context.Car.ToList();
+                        if (AvailableCars.IsNullOrEmpty())
+                        {
+                            Console.WriteLine("No available cars found.\n");
+                        }
+                        else
+                        {
+                            foreach (var car in AvailableCars)
+                            {
+                                Console.WriteLine($"Car [CAR-00{car.Id}]-{car.Model} {car.Year} | Condition:{car.Condition} | {car.Status}");
+                                Console.WriteLine();
+                            }
+                        }
                     }
 
 
