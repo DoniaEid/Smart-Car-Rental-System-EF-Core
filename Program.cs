@@ -220,7 +220,7 @@ namespace Smart_Car_Rental_System
                             Console.Write("Enter Car ID to rent:");
                             int Carid = Convert.ToInt32(Console.ReadLine());
                             ca = FindCarById(Carid);
-                            if (c is null)
+                            if (ca is null)
                             {
                                 Console.WriteLine("Car not found.");
                             }
